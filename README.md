@@ -31,7 +31,7 @@ pip install -r requirements.txt
 Place Gmail credentials in the repository.
 
 4. Run main script:
-````bash
+```bash
 python ZenInbox.py
 ```
 
