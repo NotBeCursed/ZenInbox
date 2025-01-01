@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ```
 
 3. Get Gmail credentials:
-Place Gmail credentials in the repository.
+Place Gmail credentials in the repository and OpenAI key in .env file
 
 4. Run main script:
 ```bash
@@ -37,7 +37,10 @@ python ZenInbox.py
 
 ## Optional
 
-Run in crontab :
+1. Run in crontab :
 ```bash
 0 */3 * * * /usr/bin/python3 /path/to/ZenInbox/main.py --cron >> /path/to/ZenInbox/zeninbox.log 2>&1
 ```
+
+2. Run offline mode:
+It is possible to run with Ollama self-host instead of ChatGPT.
