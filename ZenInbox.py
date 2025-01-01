@@ -3,6 +3,7 @@
 import base64
 import email
 import os.path
+import sys
 from ollama import Client, ChatResponse
 from gpt import ChatGPT
 
@@ -236,12 +237,13 @@ class ZenInbox():
         except Exception as error:
             print(f'Label apply error : {error}')
     
-    def run(self) -> None:
+    def run(self, as_cron:bool = False) -> None:
         """Launch ZenInbox Bot."""
 
         self.create_gmailLabels()
         print(self.labelsId)
-        while True:
+        
+        if as_cron:
             inboxMails = self.get_inboxMails()
             label = None
             if inboxMails:
@@ -253,8 +255,27 @@ class ZenInbox():
                 
                     if label.lower() in self.labels:
                         self.apply_label(labelName=label.lower(), mailId=mail['mailId'])
+        
+        else:
+            while True:
+                inboxMails = self.get_inboxMails()
+                label = None
+                if inboxMails:
+                    for mail in inboxMails:
+                        if self.offline: 
+                            label = self.get_label_offline(mailSender=mail['mailSender'], mailObject=mail['mailObject'], mailContent=mail['mailContent'])
+                        else :
+                            label = self.get_label(mailSender=mail['mailSender'], mailObject=mail['mailObject'], mailContent=mail['mailContent'])
+                    
+                        if label.lower() in self.labels:
+                            self.apply_label(labelName=label.lower(), mailId=mail['mailId'])
             
 
 if __name__ == '__main__':
     
-    ZenInbox(labels=['professionnel', 'personnel', 'newsletter', 'facture', 'service', 'assurance', 'banque', 'autre']).run()
+    args = sys.argv
+    print(args)
+    if '--cron' in args:
+        ZenInbox(labels=['professionnel', 'personnel', 'newsletter', 'facture', 'service', 'assurance', 'banque', 'autre']).run(as_cron=True)
+    else:
+        ZenInbox(labels=['professionnel', 'personnel', 'newsletter', 'facture', 'service', 'assurance', 'banque', 'autre']).run()
